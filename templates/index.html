@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation</title>
+    <style>
+        /* CSS cho form chọn phim */
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        form {
+            text-align: center;
+        }
+
+        select {
+            margin-bottom: 20px;
+        }
+
+        /* CSS cho phim gợi ý */
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .movie-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .movie-card {
+            width: 200px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .movie-card img {
+            width: 100%;
+            max-height: 300px;
+            display: block;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .movie-card img:hover {
+            transform: scale(1.05);
+        }
+
+        .movie-card p {
+            font-size: 16px;
+            margin: 0;
+        }
+        .tenphim {
+        font-weight: 900;
+        padding: 10px;
+        display: block; /* Đặt phần tử là block để margin hoạt động */
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Movie Recommendation</h1>
+    <form action="/" method="POST">
+        <label for="selected_movie">Choose a movie:</label><br>
+        <select id="selected_movie" name="selected_movie">
+            {% for movie in movies %}
+            <option value="{{ movie }}">{{ movie }}</option>
+            {% endfor %}
+        </select><br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <!-- Hiển thị gợi ý phim nếu có -->
+    {% if recommended_movies|length > 0 %}
+    <h2>Recommended Movies: "{{ selected_movie }}"</h2>
+    <div class="movie-container">
+        {% for movie in recommended_movies %}
+        <div class="movie-card">
+            <img src="{{ movie[12] }}" alt="{{ movie[0] }}">
+            <p class="tenphim">{{ movie[0] }} - {{ movie[1] }}</p>
+            <p>{{ movie[9] }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</body>
+</html>
