@@ -56,23 +56,31 @@
             margin: 0;
         }
         .tenphim {
-        font-weight: 900;
-        padding: 10px;
-        display: block; /* Đặt phần tử là block để margin hoạt động */
+            font-weight: 900;
+            padding: 10px;
+            display: block; 
         }
-
     </style>
 </head>
 <body>
     <h1>Movie Recommendation</h1>
+
     <form action="/" method="POST">
         <label for="selected_movie">Choose a movie:</label><br>
         <select id="selected_movie" name="selected_movie">
             {% for movie in movies %}
-            <option value="{{ movie }}">{{ movie }}</option>
+            <option value="{{ movie }}" {% if selected_movie == movie %}selected{% endif %}>{{ movie }}</option>
             {% endfor %}
         </select><br>
         <input type="submit" value="Submit">
+    </form>
+
+    <h1>Or</h1>
+
+    <form action="/" method="POST">
+        <label for="input_text">Enter a sentence:</label><br>
+        <input type="text" id="input_text" name="input_text" value="{{ input_text }}"><br>
+        <input type="submit" value="Recommend">
     </form>
 
     <!-- Hiển thị gợi ý phim nếu có -->

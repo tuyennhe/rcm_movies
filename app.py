@@ -30,16 +30,11 @@ movies_use = movies[['Title', 'Year', 'Runtime', 'Genre1', 'Genre2', 'Genre3', '
 # Xây dựng hệ thống đề xuất phim
 tfidf_vectorizer = TfidfVectorizer(stop_words='english')
 
-# Tính ma trận TF-IDF cho các yếu tố: thể loại, diễn viên, và nội dung
-tfidf_matrix_genre = tfidf_vectorizer.fit_transform(movies_use[['Genre1', 'Genre2', 'Genre3']].apply(lambda x: ' '.join(x.dropna()), axis=1))
-tfidf_matrix_stars = tfidf_vectorizer.fit_transform(movies_use[['Stars1', 'Stars2', 'Stars3']].apply(lambda x: ' '.join(x.dropna()), axis=1))
-tfidf_matrix_description = tfidf_vectorizer.fit_transform(movies_use['Description'])
-
-# Kết hợp các ma trận thành một
-combined_tfidf_matrix = hstack((tfidf_matrix_genre, tfidf_matrix_stars, tfidf_matrix_description))
+# Tạo ma trận TF-IDF cho tất cả các yếu tố: thể loại, diễn viên, và nội dung
+tfidf_matrix = tfidf_vectorizer.fit_transform(movies_use[['Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description']].apply(lambda x: ' '.join(x.dropna()), axis=1))
 
 # Tính toán độ tương đồng giữa các phim
-cosine_sim = linear_kernel(combined_tfidf_matrix, combined_tfidf_matrix)
+cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
 
 def recommend_movies(movie_title, top_n=5):
     idx = movies_use.index[movies_use['Title'] == movie_title].tolist()[0]
@@ -50,14 +45,38 @@ def recommend_movies(movie_title, top_n=5):
     similar_movies = movies_use.iloc[similar_movies_indices]
     return similar_movies
 
+def recommend_movies_based_on_text(input_text, top_n=5):
+    # Tạo ma trận TF-IDF cho câu văn người dùng nhập vào
+    input_tfidf = tfidf_vectorizer.transform([input_text])
+
+    # Tính toán độ tương đồng giữa câu văn nhập vào và tất cả các phim trong tập dữ liệu
+    cosine_scores = linear_kernel(input_tfidf, tfidf_matrix).flatten()
+
+    # Lấy chỉ mục của top N phim tương đồng nhất
+    top_indices = cosine_scores.argsort()[-top_n:][::-1]
+
+    # Lấy thông tin về các phim được gợi ý
+    recommended_movies = movies_use.iloc[top_indices]
+
+    return recommended_movies
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    selected_movie = ""
+    input_text = ""
+
     if request.method == 'POST':
-        selected_movie = request.form['selected_movie']
-        recommended_movies = recommend_movies(selected_movie)
-        return render_template('index.html', movies=movies_use['Title'], recommended_movies=recommended_movies.values, selected_movie=selected_movie)
-    else:
-        return render_template('index.html', movies=movies_use['Title'])
+        selected_movie = request.form.get('selected_movie', "")
+        input_text = request.form.get('input_text', "")
+
+        if selected_movie:
+            recommended_movies = recommend_movies(selected_movie)
+            return render_template('index.html', movies=movies_use['Title'], recommended_movies=recommended_movies.values, selected_movie=selected_movie, input_text=input_text)
+        elif input_text:
+            recommended_movies = recommend_movies_based_on_text(input_text)
+            return render_template('index.html', movies=movies_use['Title'], recommended_movies=recommended_movies.values, selected_movie=selected_movie, input_text=input_text)
+
+    return render_template('index.html', movies=movies_use['Title'], selected_movie=selected_movie, input_text=input_text)
 
 if __name__ == '__main__':
     app.run(debug=True)
