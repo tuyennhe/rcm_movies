@@ -6,7 +6,7 @@ from scipy.sparse import hstack
 
 app = Flask(__name__)
 
-# Đọc dữ liệu từ file CSV
+# Tiền xử lí dữ liệu
 movies = pd.read_csv("./Data/Data_final/5232movies_imdb.csv", encoding='latin1')
 movies = movies.drop_duplicates(subset=['Title'])
 movies = movies.reset_index(drop=True)
@@ -19,12 +19,11 @@ genre_split = movies['Genre'].str.split(', ', expand=True)
 genre_split.columns = ['Genre1', 'Genre2', 'Genre3']
 movies = pd.concat([movies, genre_split], axis=1)
 temp_df = movies['Stars'].str.split(', ', expand=True)
-
-# Tạo các cột mới từ các cột tạm thời
 movies['Stars1'] = temp_df[0]
 movies['Stars2'] = temp_df[1]
 movies['Stars3'] = temp_df[2]
 
+#chọn các cột cần thiết để sử dụng
 movies_use = movies[['Title', 'Year', 'Runtime', 'Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description', 'Rating', 'Votes', 'Img_link']]
 
 # Xây dựng hệ thống đề xuất phim
