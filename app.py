@@ -3,6 +3,8 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 from scipy.sparse import hstack
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 app = Flask(__name__)
 
@@ -23,10 +25,42 @@ movies['Stars1'] = temp_df[0]
 movies['Stars2'] = temp_df[1]
 movies['Stars3'] = temp_df[2]
 
-movies_use = movies[['Title', 'Year', 'Runtime', 'Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description', 'Rating', 'Votes', 'Img_link']]
+# movies_use = movies[['Title', 'Year', 'Runtime', 'Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description', 'Rating', 'Votes', 'Img_link','Recommendation']]
 
+##########################################
+nltk.download('vader_lexicon')
+sid = SentimentIntensityAnalyzer()
+def label_sentiment(description):
+    # Phân tích cảm xúc
+    scores = sid.polarity_scores(description)
+    # Lấy điểm số compound
+    compound_score = scores['compound']
+    
+    # Gán nhãn cảm xúc dựa trên điểm số compound
+    if compound_score >= 0.05:
+        sentiment = "Positive"
+    elif compound_score <= -0.05:
+        sentiment = "Negative"
+    else:
+        sentiment = "Neutral"
+    
+    return sentiment
+movies['Sentiment'] = movies['Description'].apply(label_sentiment)
+positive_threshold = 7
+neutral_threshold_low = 4
+neutral_threshold_high = 7
+def recommend_movie(rating, sentiment):
+    if rating >= positive_threshold or (rating >= neutral_threshold_high and sentiment == "Neutral"):
+        return "Recommend"
+    else:
+        return "Not Recommend"
+movies['Recommendation'] = movies.apply(lambda row: recommend_movie(row['Rating'], row['Sentiment']), axis=1)
+
+##########################################
+
+
+movies_use = movies[['Title', 'Year', 'Runtime', 'Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description', 'Rating', 'Votes', 'Img_link','Recommendation']]
 tfidf_vectorizer = TfidfVectorizer(stop_words='english')
-
 tfidf_matrix = tfidf_vectorizer.fit_transform(movies_use[['Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description']].apply(lambda x: ' '.join(x.dropna()), axis=1))
 
 # Tính toán độ tương đồng giữa các phim
