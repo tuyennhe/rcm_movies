@@ -23,13 +23,10 @@ movies['Stars1'] = temp_df[0]
 movies['Stars2'] = temp_df[1]
 movies['Stars3'] = temp_df[2]
 
-#chọn các cột cần thiết để sử dụng
 movies_use = movies[['Title', 'Year', 'Runtime', 'Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description', 'Rating', 'Votes', 'Img_link']]
 
-# Xây dựng hệ thống đề xuất phim
 tfidf_vectorizer = TfidfVectorizer(stop_words='english')
 
-# Tạo ma trận TF-IDF cho tất cả các yếu tố: thể loại, diễn viên, và nội dung
 tfidf_matrix = tfidf_vectorizer.fit_transform(movies_use[['Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description']].apply(lambda x: ' '.join(x.dropna()), axis=1))
 
 # Tính toán độ tương đồng giữa các phim
@@ -45,18 +42,10 @@ def recommend_movies(movie_title, top_n=5):
     return similar_movies
 
 def recommend_movies_based_on_text(input_text, top_n=5):
-    # Tạo ma trận TF-IDF cho câu văn người dùng nhập vào
     input_tfidf = tfidf_vectorizer.transform([input_text])
-
-    # Tính toán độ tương đồng giữa câu văn nhập vào và tất cả các phim trong tập dữ liệu
     cosine_scores = linear_kernel(input_tfidf, tfidf_matrix).flatten()
-
-    # Lấy chỉ mục của top N phim tương đồng nhất
     top_indices = cosine_scores.argsort()[-top_n:][::-1]
-
-    # Lấy thông tin về các phim được gợi ý
     recommended_movies = movies_use.iloc[top_indices]
-
     return recommended_movies
 
 @app.route('/', methods=['GET', 'POST'])
