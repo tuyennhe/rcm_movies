@@ -12,7 +12,7 @@ app = Flask(__name__)
 movies = pd.read_csv("./Data/Data_final/5232movies_imdb.csv", encoding='latin1')
 movies = movies.drop_duplicates(subset=['Title'])
 movies = movies.reset_index(drop=True)
-movies['Year'] = movies['Year'].str.extract(r'(\d{4})') 
+movies['Year'] = movies['Year'].str.extract(r'(\d{4})')
 movies['Year'] = movies['Year'].astype(int)
 
 movies['Runtime'] = movies['Runtime'].str.replace(' min', '').str.replace(',', '').astype(float).astype('Int64')
@@ -25,8 +25,6 @@ movies['Stars1'] = temp_df[0]
 movies['Stars2'] = temp_df[1]
 movies['Stars3'] = temp_df[2]
 
-# movies_use = movies[['Title', 'Year', 'Runtime', 'Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description', 'Rating', 'Votes', 'Img_link','Recommendation']]
-
 ##########################################
 nltk.download('vader_lexicon')
 sid = SentimentIntensityAnalyzer()
@@ -35,7 +33,7 @@ def label_sentiment(description):
     scores = sid.polarity_scores(description)
     # Lấy điểm số compound
     compound_score = scores['compound']
-    
+
     # Gán nhãn cảm xúc dựa trên điểm số compound
     if compound_score >= 0.05:
         sentiment = "Positive"
@@ -43,37 +41,45 @@ def label_sentiment(description):
         sentiment = "Negative"
     else:
         sentiment = "Neutral"
-    
+
     return sentiment
+
+
 movies['Sentiment'] = movies['Description'].apply(label_sentiment)
 positive_threshold = 7
 neutral_threshold_low = 4
 neutral_threshold_high = 7
+
+
 def recommend_movie(rating, sentiment):
     if rating >= positive_threshold or (rating >= neutral_threshold_high and sentiment == "Neutral"):
         return "Recommend"
     else:
         return "Not Recommend"
+    
 movies['Recommendation'] = movies.apply(lambda row: recommend_movie(row['Rating'], row['Sentiment']), axis=1)
-
 ##########################################
 
 
-movies_use = movies[['Title', 'Year', 'Runtime', 'Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description', 'Rating', 'Votes', 'Img_link','Recommendation']]
+movies_use = movies[
+    ['Title', 'Year', 'Runtime', 'Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description', 'Rating',
+     'Votes', 'Img_link', 'Recommendation']]
 tfidf_vectorizer = TfidfVectorizer(stop_words='english')
-tfidf_matrix = tfidf_vectorizer.fit_transform(movies_use[['Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description']].apply(lambda x: ' '.join(x.dropna()), axis=1))
+tfidf_matrix = tfidf_vectorizer.fit_transform(
+    movies_use[['Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description']].apply(
+        lambda x: ' '.join(x.dropna()), axis=1))
 
 # Tính toán độ tương đồng giữa các phim
 cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
-
 def recommend_movies(movie_title, top_n=5):
     idx = movies_use.index[movies_use['Title'] == movie_title].tolist()[0]
     sim_scores = list(enumerate(cosine_sim[idx]))
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-    sim_scores = sim_scores[1:top_n+1]
+    sim_scores = sim_scores[1:top_n + 1]
     similar_movies_indices = [i[0] for i in sim_scores]
     similar_movies = movies_use.iloc[similar_movies_indices]
     return similar_movies
+
 
 def recommend_movies_based_on_text(input_text, top_n=5):
     input_tfidf = tfidf_vectorizer.transform([input_text])
@@ -81,6 +87,7 @@ def recommend_movies_based_on_text(input_text, top_n=5):
     top_indices = cosine_scores.argsort()[-top_n:][::-1]
     recommended_movies = movies_use.iloc[top_indices]
     return recommended_movies
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -93,12 +100,18 @@ def index():
 
         if selected_movie:
             recommended_movies = recommend_movies(selected_movie)
-            return render_template('index.html', movies=movies_use['Title'], recommended_movies=recommended_movies.values, selected_movie=selected_movie, input_text=input_text)
+            return render_template('index.html', movies=movies_use['Title'],
+                                   recommended_movies=recommended_movies.values, selected_movie=selected_movie,
+                                   input_text=input_text)
         elif input_text:
             recommended_movies = recommend_movies_based_on_text(input_text)
-            return render_template('index.html', movies=movies_use['Title'], recommended_movies=recommended_movies.values, selected_movie=selected_movie, input_text=input_text)
+            return render_template('index.html', movies=movies_use['Title'],
+                                   recommended_movies=recommended_movies.values, selected_movie=selected_movie,
+                                   input_text=input_text)
 
-    return render_template('index.html', movies=movies_use['Title'], selected_movie=selected_movie, input_text=input_text)
+    return render_template('index.html', movies=movies_use['Title'], selected_movie=selected_movie,
+                           input_text=input_text)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

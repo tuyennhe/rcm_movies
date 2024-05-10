@@ -67,6 +67,6 @@ for page in range(1, num_pages + 1):
 df = pd.DataFrame(all_movies)
 
 # Lưu DataFrame vào file Excel
-df.to_excel("D:\Code\Do_An_AI\movies_data_2024.xlsx", index=False)
+df.to_excel("D:\Code\Do_An_AI\movies_data_2024_test.xlsx", index=False)
 
 print("Dữ liệu đã được lưu")
