@@ -124,3 +124,43 @@ select#selected_movie {
 input#input_text {
     border-radius: 10px;
 }
+
+.tenphim,
+.time,
+.noidung,
+.xemhay0 {
+    width: 100%; /* Chiều rộng 100% của phần tử chứa */
+    padding: 5px 0; /* Padding ở trên và dưới */
+    box-sizing: border-box; /* Bao gồm padding và border vào kích thước */
+}
+
+.time,
+.noidung,
+.xemhay0,
+.tenphim {
+    word-wrap: break-word; 
+}
+
+.tenphim {
+    width: 100%; 
+    height: 50px;
+    font-weight: 900;
+    text-align: center;
+    overflow: hidden; 
+    white-space: inherit; 
+}
+
+.time,
+.xemhay0 {
+    font-weight: 900;
+    padding-bottom: 5px;
+}
+
+.noidung {
+    text-align: justify; 
+    width: 100%; 
+    height: 150px;
+    overflow: hidden; 
+    white-space: inherit;
+}
+
