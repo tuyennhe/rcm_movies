@@ -79,26 +79,26 @@ h2 {
 .input_movies {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center; /* Center align the forms */
+    justify-content: center; 
 }
 
 .input_movies form {
     flex: 1;
-    margin-right: 20px; /* Adjust as needed */
-    position: relative; /* To position the suggestions */
+    margin-right: 20px; 
+    position: relative; 
 }
 
 .input_movies select,
 .input_movies input[type="text"] {
-    width: calc(50% - 10px); /* Set width to 50% of the container width with some space between them */
-    height: 40px; /* Set the height to 40px (adjust as needed) */
-    box-sizing: border-box; /* Include padding and border in the width */
-    margin-right: 10px; /* Add space between select and input */
+    width: calc(50% - 10px); 
+    height: 40px; 
+    box-sizing: border-box; 
+    margin-right: 10px; 
 }
 
 .input_movies input[type="submit"].sbm {
-    /* Style for submit button */
-    background-color: #4CAF50; /* Green */
+    
+    background-color: #4CAF50; 
     border: none;
     color: white;
     padding: 10px 20px;
@@ -112,7 +112,7 @@ h2 {
 }
 
 .input_movies input[type="submit"].sbm:hover {
-    background-color: #45a049; /* Darker green on hover */
+    background-color: #45a049;
 }
 
 #input_text {
@@ -120,7 +120,7 @@ h2 {
 }
 
 .sbm {
-    width: auto; /* Reset width to auto */
+    width: auto;
 }
 
 select#selected_movie {
@@ -140,9 +140,9 @@ input#selected_movie {
 .time,
 .noidung,
 .xemhay0 {
-    width: 100%; /* Chiều rộng 100% của phần tử chứa */
-    padding: 5px 0; /* Padding ở trên và dưới */
-    box-sizing: border-box; /* Bao gồm padding và border vào kích thước */
+    width: 100%; 
+    padding: 5px 0; 
+    box-sizing: border-box; 
 }
 
 .time,
@@ -187,7 +187,7 @@ input#selected_movie {
     list-style: none;
     margin: 0;
     padding: 0;
-    top: 60px; /* Adjust to ensure it appears right below the input field */
+    top: 60px; 
     margin-left: 140px;
 }
 
