@@ -53,9 +53,9 @@ neutral_threshold_high = 7
 
 def recommend_movie(rating, sentiment):
     if rating >= positive_threshold or (rating >= neutral_threshold_high and sentiment == "Neutral"):
-        return "Recommend"
+        return "Hay"
     else:
-        return "Not Recommend"
+        return "Khong Hay Cho Lam"
     
 movies['Recommendation'] = movies.apply(lambda row: recommend_movie(row['Rating'], row['Sentiment']), axis=1)
 ##########################################
