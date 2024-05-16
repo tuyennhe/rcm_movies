@@ -6,18 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Recommendation</title>
     <link rel="stylesheet" href="/static/main.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .suggestions {
+            border: 1px solid #ccc;
+            display: none;
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: #fff;
+            position: absolute;
+            width: calc(50% - 20px);
+            z-index: 1000;
+        }
+
+        .suggestions li {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .suggestions li:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
 </head>
 <body>
     <h1>MOVIE RECOMMENDATION</h1>
 
     <div class="input_movies">
         <form action="/" method="POST">
-            <label for="selected_movie">Choose a movie:</label><br>
-            <select id="selected_movie" name="selected_movie">
-                {% for movie in movies %}
-                <option value="{{ movie }}" {% if selected_movie == movie %}selected{% endif %}>{{ movie }}</option>
-                {% endfor %}
-            </select><br>
+            <label for="selected_movie">Enter a movie name:</label><br>
+            <input type="text" id="selected_movie" name="selected_movie" value="{{ selected_movie }}" autocomplete="off">
+            <ul class="suggestions"></ul><br>
             <input type="submit" value="Recommend" class="sbm">
         </form>
     
@@ -44,5 +63,38 @@
         {% endfor %}
     </div>
     {% endif %}
+
+    <script>
+        $(document).ready(function() {
+            $('#selected_movie').on('input', function() {
+                var query = $(this).val();
+                if (query.length > 0) {
+                    $.ajax({
+                        url: '/suggest',
+                        data: { q: query },
+                        success: function(data) {
+                            $('.suggestions').empty().show();
+                            data.forEach(function(item) {
+                                $('.suggestions').append('<li>' + item + '</li>');
+                            });
+                        }
+                    });
+                } else {
+                    $('.suggestions').hide();
+                }
+            });
+
+            $(document).on('click', '.suggestions li', function() {
+                $('#selected_movie').val($(this).text());
+                $('.suggestions').hide();
+            });
+
+            $(document).click(function(e) {
+                if (!$(e.target).closest('.input_movies').length) {
+                    $('.suggestions').hide();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
