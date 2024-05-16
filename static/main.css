@@ -188,6 +188,7 @@ input#selected_movie {
     margin: 0;
     padding: 0;
     top: 60px; /* Adjust to ensure it appears right below the input field */
+    margin-left: 140px;
 }
 
 .suggestions li {
