@@ -131,6 +131,11 @@ input#input_text {
     border-radius: 10px;
 }
 
+input#selected_movie {
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
 .tenphim,
 .time,
 .noidung,
@@ -144,16 +149,16 @@ input#input_text {
 .noidung,
 .xemhay0,
 .tenphim {
-    word-wrap: break-word; 
+    word-wrap: break-word;
 }
 
 .tenphim {
-    width: 100%; 
+    width: 100%;
     height: 50px;
     font-weight: 900;
     text-align: center;
-    overflow: hidden; 
-    white-space: inherit; 
+    overflow: hidden;
+    white-space: inherit;
 }
 
 .time,
@@ -163,10 +168,34 @@ input#input_text {
 }
 
 .noidung {
-    text-align: justify; 
-    width: 100%; 
+    text-align: justify;
+    width: 100%;
     height: 150px;
-    overflow: hidden; 
+    overflow: hidden;
     white-space: inherit;
+}
+
+.suggestions {
+    border: 1px solid #ccc;
+    display: none;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: #fff;
+    position: absolute;
+    width: calc(50% - 20px); 
+    z-index: 1000;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    top: 60px; /* Adjust to ensure it appears right below the input field */
+}
+
+.suggestions li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.suggestions li:hover {
+    background-color: #f0f0f0;
 }
 
