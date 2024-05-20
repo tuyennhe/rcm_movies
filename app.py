@@ -39,15 +39,15 @@ def label_sentiment(description):
     return sentiment
 
 movies['Sentiment'] = movies['Description'].apply(label_sentiment)
-positive_threshold = 7
+positive_threshold = 8
 neutral_threshold_low = 4
 neutral_threshold_high = 7
 
 def recommend_movie(rating, sentiment):
     if rating >= positive_threshold or (rating >= neutral_threshold_high and sentiment == "Neutral"):
-        return "Hay"
+        return "Phim hay, cảm xúc tích cực"
     else:
-        return "Khong Hay Cho Lam"
+        return "Không được hay cho lắm"
     
 movies['Recommendation'] = movies.apply(lambda row: recommend_movie(row['Rating'], row['Sentiment']), axis=1)
 
