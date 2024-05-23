@@ -39,21 +39,23 @@ def label_sentiment(description):
     return sentiment
 
 movies['Sentiment'] = movies['Description'].apply(label_sentiment)
-positive_threshold = 8
-neutral_threshold_low = 4
-neutral_threshold_high = 7
 
 def recommend_movie(rating, sentiment):
-    if rating >= positive_threshold or (rating >= neutral_threshold_high and sentiment == "Neutral"):
-        return "Phim hay, cảm xúc tích cực"
+    if rating > 7 and sentiment == "Positive":
+        return "Phim hay nên xem"
+    elif rating >= 7.5 and sentiment == "Neutral":
+        return "Phim hay"
+    elif rating >= 7.5 and sentiment == "Negative":
+        return "Phim hay nên xem"
     else:
         return "Không được hay cho lắm"
-    
+
 movies['Recommendation'] = movies.apply(lambda row: recommend_movie(row['Rating'], row['Sentiment']), axis=1)
+
 
 movies_use = movies[['Title', 'Year', 'Runtime', 'Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description', 'Rating', 'Votes', 'Img_link', 'Recommendation']]
 tfidf_vectorizer = TfidfVectorizer(stop_words='english')
-tfidf_matrix = tfidf_vectorizer.fit_transform(movies_use[['Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description']].apply(lambda x: ' '.join(x.dropna()), axis=1))
+tfidf_matrix = tfidf_vectorizer.fit_transform(movies_use[['Title','Genre1', 'Genre2', 'Genre3', 'Stars1', 'Stars2', 'Stars3', 'Description']].apply(lambda x: ' '.join(x.dropna()), axis=1))
 
 cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
 
