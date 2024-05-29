@@ -33,7 +33,7 @@ movies['Stars2'] = temp_df[1]
 movies['Stars3'] = temp_df[2]
 ratings = ratings.merge(movies[['MovieID', 'Title']], on='MovieID')
 
-# Define a reader for the ratings data
+# Define a reader for the ratings dat
 reader = Reader(rating_scale=(1, 5))
 data = Dataset.load_from_df(ratings[['UserID', 'MovieID', 'Rating']], reader)
 
