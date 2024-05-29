@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, session, jsonify
 import pandas as pd
-import numpy as np
 from surprise import Dataset, Reader, SVD
 from surprise.model_selection import train_test_split
 
@@ -59,7 +58,7 @@ def new_user():
 def add_rating():
     movie_id = int(request.form['movie_id'])
     rating = int(request.form['rating'])
-    session['new_ratings'].append((len(users) + 1, movie_id, rating))
+    session['new_ratings'].append((int(ratings['UserID'].max()) + 1, movie_id, rating))
     return jsonify(session['new_ratings'])
 
 @app.route('/submit_ratings', methods=['POST'])
@@ -67,7 +66,8 @@ def submit_ratings():
     new_ratings = session.get('new_ratings', [])
     
     # Add new user to users DataFrame
-    new_user = {'UserID': len(users) + 1, 'Gender': 'M', 'Age': 25, 'Occupation': 1, 'Zip-code': '00000'}
+    new_user_id = int(ratings['UserID'].max()) + 1
+    new_user = {'UserID': new_user_id, 'Gender': 'M', 'Age': 25, 'Occupation': 1, 'Zip-code': '00000'}
     users.loc[len(users)] = new_user
 
     # Add new ratings to ratings DataFrame
@@ -75,7 +75,7 @@ def submit_ratings():
         ratings.loc[len(ratings)] = [user_id, movie_id, rating]
 
     # Merge ratings with movies
-    ratings_merged = ratings.merge(movies, on='MovieID')
+    ratings_merged = ratings[['UserID', 'MovieID', 'Rating']]
 
     # Ensure 'Rating' column exists
     if 'Rating' not in ratings_merged.columns:
@@ -83,7 +83,7 @@ def submit_ratings():
 
     # Define a reader for the ratings data
     reader = Reader(rating_scale=(1, 5))
-    data = Dataset.load_from_df(ratings_merged[['UserID', 'MovieID', 'Rating']], reader)
+    data = Dataset.load_from_df(ratings_merged, reader)
 
     # Split data into trainset and testset
     trainset, testset = train_test_split(data, test_size=0.2)
@@ -93,12 +93,12 @@ def submit_ratings():
     model.fit(trainset)
 
     # Recommend movies for the new user
-    recommendations = recommend_movies(len(users), model, movies)
+    recommendations = recommend_movies(new_user_id, model, movies)
     
     # Debugging
     print(recommendations)
 
-    return render_template('recommendations.html', user_id=len(users), recommendations=recommendations)
+    return render_template('recommendations.html', user_id=new_user_id, recommendations=recommendations)
 
 if __name__ == '__main__':
     app.run(debug=True)

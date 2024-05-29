@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendations for User {{ user_id }}</title>
+    <link rel="stylesheet" href="/static/main2.css">
+</head>
+<body>
+    <h1>Recommendations for User {{ user_id }}</h1>
+    <div class="movie-container">
+        {% for _, movie in recommendations.iterrows() %}
+        <div class="movie-card">
+            <img src="{{ movie['Img_link'] }}" alt="{{ movie['Title'] }}">
+            <p class="tenphim">{{ movie['Title'] }} - {{ movie['Year'] }} </p>
+            <p class="time">{{ movie['Runtime'] }} min - rate: {{ movie['Rating'] }}</p>
+            <p class="noidung">{{ movie['Description'] }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <a href="/">Back</a>
+</body>
+</html>
