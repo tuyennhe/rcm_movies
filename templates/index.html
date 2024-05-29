@@ -10,7 +10,9 @@
 </head>
 <body>
     <h1>MOVIE RECOMMENDATION</h1>
-
+    <form action="/new_user" method="GET">
+        <button type="submit">New user</button>
+    </form>
     <div class="input_movies">
         <form action="/" method="POST">
             <label for="selected_movie">Enter a movie name:</label><br>
@@ -24,8 +26,8 @@
             <input type="text" id="input_text" name="input_text" value="{{ input_text }}"><br>
             <input type="submit" value="Recommend" class="sbm">
         </form>
+        
     </div>
-    
 
     <!-- Hiển thị gợi ý phim nếu có -->
     {% if recommended_movies|length > 0 %}

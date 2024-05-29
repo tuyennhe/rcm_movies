@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create New User and Rate Movies</title>
+    <link rel="stylesheet" href="/static/main_newuser.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
@@ -32,7 +33,7 @@
         {% endfor %}
     </ul>
     <form action="/submit_ratings" method="post">
-        <input type="submit" value="Submit Ratings">
+        <input class="submit_bt" type="submit" value="Submit Ratings">
     </form>
     <script>
         $(document).ready(function() {
@@ -42,7 +43,6 @@
                     type: 'POST',
                     data: $('#ratingForm').serialize(),
                     success: function(data) {
-                        // $('#ratingList').empty();  // Xóa toàn bộ danh sách hiện tại
                         data.forEach(function(rating) {
                             $('#ratingList').append('<li>Movie ID: ' + rating[1] + ', Rating: ' + rating[2] + '</li>');
                         });
