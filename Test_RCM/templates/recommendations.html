@@ -13,8 +13,9 @@
         <div class="movie-card">
             <img src="{{ movie['Img_link'] }}" alt="{{ movie['Title'] }}">
             <p class="tenphim">{{ movie['Title'] }} - {{ movie['Year'] }} </p>
-            <p class="time">{{ movie['Runtime'] }} min - rate: {{ movie['Rating'] }}</p>
+            <p class="time">{{ movie['Runtime'] }} min - rate: {{ movie['Rate'] }}</p>
             <p class="noidung">{{ movie['Description'] }}</p>
+            <p class="xemhay0">{{ movie[-1] }}</p>
         </div>
         {% endfor %}
     </div>
