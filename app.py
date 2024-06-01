@@ -13,7 +13,7 @@ app.secret_key = 'your_secret_key'
 # Đọc dữ liệu
 movies = pd.read_csv("./Data/Data_final/movies.csv", encoding='latin1')
 users = pd.read_csv("./Data/Data_final/users.csv", encoding='latin1')
-ratings = pd.read_csv("./Data/Data_final/ratings.csv", encoding='latin1')
+ratings = pd.read_csv("./Data/Data_final/ratings_small.csv", encoding='latin1')
 
 #Tiền xử lí dữ liệu
 ratings = ratings.dropna(subset=['Rating'])
@@ -152,14 +152,9 @@ def submit_ratings():
         raise ValueError("Rating column not found in merged DataFrame.")
     reader = Reader(rating_scale=(1, 5))
     data = Dataset.load_from_df(ratings_merged, reader)
-
-    trainset, testset = train_test_split(data, test_size=0.2)
-
-    # Build and train the model
+    trainset = data.build_full_trainset()
     model = SVD()
     model.fit(trainset)
-
-    # Recommend movies for the new user
     recommendations = recommend_movies(new_user_id, model, movies)
     
     return render_template('recommendations.html', user_id=new_user_id, recommendations=recommendations)
